@@ -188,6 +188,7 @@ fn mls_group_operations(ciphersuite: Ciphersuite, backend: &impl OpenMlsCryptoPr
         );
 
         // === Alice sends a message to Bob ===
+        alice_group.set_aad(&[1, 2]);
         let message_alice = b"Hi, I'm Alice!";
         let queued_message = alice_group
             .create_message(backend, message_alice)
@@ -196,6 +197,7 @@ fn mls_group_operations(ciphersuite: Ciphersuite, backend: &impl OpenMlsCryptoPr
         let unverified_message = bob_group
             .parse_message(queued_message.clone().into(), backend)
             .expect("Could not parse message.");
+        assert_eq!(unverified_message.aad(), &[1, 2]);
         let sender = unverified_message
             .credential()
             .expect("Expected a credential.")

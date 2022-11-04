@@ -10,6 +10,8 @@
 //! it is important to look at [`MlsMessageIn::group_id()`] to determine in which
 //! [`MlsGroup`](crate::group::mls_group::MlsGroup) it should be processed.
 
+use std::borrow::Borrow;
+
 use tls_codec::{Deserialize, Serialize};
 
 use super::*;
@@ -79,6 +81,13 @@ impl MlsMessage {
             .tls_serialize_detached()
             .map_err(LibraryError::missing_bound_check)?)
     }
+
+    fn aad(&self) -> &[u8] {
+        match self {
+            MlsMessage::Plaintext(m) => m.tbs.authenticated_data.borrow(),
+            MlsMessage::Ciphertext(m) => m.authenticated_data.borrow(),
+        }
+    }
 }
 
 /// Unified message type for incoming MLS messages.
@@ -123,6 +132,10 @@ impl MlsMessageIn {
     /// Serializes the message to a byte vector. Returns [`MlsMessageError::LibraryError`] on failure.
     pub fn to_bytes(&self) -> Result<Vec<u8>, MlsMessageError> {
         self.mls_message.to_bytes()
+    }
+
+    pub fn aad(&self) -> &[u8] {
+        self.mls_message.aad()
     }
 }
 

@@ -194,8 +194,10 @@ fn mls_group_operations(ciphersuite: Ciphersuite, backend: &impl OpenMlsCryptoPr
             .create_message(backend, message_alice)
             .expect("Error creating application message");
 
+        let queued_message_in: MlsMessageIn = queued_message.clone().into();
+        assert_eq!(queued_message_in.aad(), &[1, 2]);
         let unverified_message = bob_group
-            .parse_message(queued_message.clone().into(), backend)
+            .parse_message(queued_message_in, backend)
             .expect("Could not parse message.");
         assert_eq!(unverified_message.aad(), &[1, 2]);
         let sender = unverified_message

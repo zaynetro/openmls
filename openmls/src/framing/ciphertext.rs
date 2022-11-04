@@ -24,7 +24,7 @@ pub(crate) struct MlsCiphertext {
     group_id: GroupId,
     epoch: GroupEpoch,
     content_type: ContentType,
-    authenticated_data: TlsByteVecU32,
+    pub(crate) authenticated_data: TlsByteVecU32,
     encrypted_sender_data: TlsByteVecU8,
     ciphertext: TlsByteVecU32,
 }
